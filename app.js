@@ -780,6 +780,8 @@ const planningDensityModes = [
   { id: "severe", th: "หนาแน่นมาก", en: "Severe", vehicles: 58, speed: 15, color: "#a32d2d", duration: 10000 },
 ];
 
+const routeConnectionMaxMeters = 25;
+
 let planningMapRuntime = null;
 
 function renderPlanning() {
@@ -1180,10 +1182,17 @@ function randomBetween(min, max) {
   return min + Math.random() * (max - min);
 }
 
+function distanceMeters(pointA, pointB) {
+  const midLat = ((pointA[0] + pointB[0]) / 2) * (Math.PI / 180);
+  const metersPerLat = 111_320;
+  const metersPerLng = Math.cos(midLat) * 111_320;
+  return Math.hypot((pointA[0] - pointB[0]) * metersPerLat, (pointA[1] - pointB[1]) * metersPerLng);
+}
+
 function routeLength(points) {
   return points.slice(1).reduce((total, point, index) => {
     const previous = points[index];
-    return total + Math.hypot(point[0] - previous[0], point[1] - previous[1]);
+    return total + distanceMeters(point, previous);
   }, 0);
 }
 
@@ -1195,7 +1204,7 @@ function pointOnRoute(points, progress) {
   for (let index = 1; index < points.length; index += 1) {
     const start = points[index - 1];
     const end = points[index];
-    const segmentLength = Math.hypot(end[0] - start[0], end[1] - start[1]);
+    const segmentLength = distanceMeters(end, start);
     const target = safeProgress * totalLength;
 
     if (walked + segmentLength >= target) {
@@ -1262,11 +1271,12 @@ function findNextRoad(currentName, endPoint) {
   let bestReverse = false;
   planningRoads.forEach((road) => {
     if (road.name === currentName) return;
-    const s = Math.hypot(road.points[0][0] - endPoint[0], road.points[0][1] - endPoint[1]);
-    const e = Math.hypot(road.points[road.points.length - 1][0] - endPoint[0], road.points[road.points.length - 1][1] - endPoint[1]);
+    const s = distanceMeters(road.points[0], endPoint);
+    const e = distanceMeters(road.points[road.points.length - 1], endPoint);
     if (s < bestDist) { bestDist = s; best = road; bestReverse = false; }
     if (e < bestDist) { bestDist = e; best = road; bestReverse = true; }
   });
+  if (bestDist > routeConnectionMaxMeters) return null;
   return best ? { points: bestReverse ? [...best.points].reverse() : best.points, name: best.name } : null;
 }
 
@@ -1281,7 +1291,8 @@ function bindPlanningMapInteractions() {
     return;
   }
 
-  const bounds = L.latLngBounds(planningBoundary);
+  const routePoints = planningRoads.flatMap((road) => road.points);
+  const bounds = L.latLngBounds([...planningBoundary, ...routePoints]);
   const map = L.map(mapElement, { zoomControl: true, scrollWheelZoom: true, preferCanvas: true });
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1291,7 +1302,15 @@ function bindPlanningMapInteractions() {
 
   map.fitBounds(bounds, { padding: [24, 24] });
 
-  planningRoads.forEach((road) => L.polyline(road.points, { opacity: 0, weight: 0 }).addTo(map));
+  planningRoads.forEach((road) => {
+    L.polyline(road.points, {
+      color: "#185fa5",
+      dashArray: "5 8",
+      interactive: false,
+      opacity: 0.34,
+      weight: 4,
+    }).addTo(map);
+  });
 
   const runtime = {
     animationFrame: null,
