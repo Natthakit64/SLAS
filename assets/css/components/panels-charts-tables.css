@@ -1,0 +1,164 @@
+.panel {
+  overflow: hidden;
+  padding: 18px;
+}
+
+.panel-header,
+.section-header,
+.report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.panel-title {
+  display: grid;
+  gap: 3px;
+}
+
+.panel-title p,
+.section-header p,
+.report-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.chart-svg {
+  display: block;
+  width: 100%;
+  min-height: 250px;
+}
+
+.axis,
+.grid-line {
+  stroke: #e9e5dd;
+  stroke-width: 1;
+}
+
+.axis-label {
+  fill: #888780;
+  font-size: 11px;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--accent-green);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-area {
+  opacity: 0.16;
+}
+
+.chart-dot {
+  fill: #fff;
+  stroke: var(--accent-green);
+  stroke-width: 3;
+}
+
+.donut-wrap {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr);
+  align-items: center;
+  gap: 18px;
+  min-height: 250px;
+}
+
+.donut {
+  position: relative;
+  width: min(220px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: conic-gradient(var(--donut-stops));
+}
+
+.donut::after {
+  position: absolute;
+  inset: 22%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 850;
+  content: attr(data-center);
+}
+
+.legend {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--text-secondary);
+}
+
+.legend-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.swatch {
+  width: 10px;
+  min-width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--swatch);
+}
+
+.table-wrap {
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px 0;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+}
+
+th,
+td {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 760;
+  background: #fffaf1;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}

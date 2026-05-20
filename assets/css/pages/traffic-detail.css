@@ -1,0 +1,104 @@
+.text-link {
+  color: var(--accent-green);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.text-link:hover,
+.text-link:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  color: var(--accent-green);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.text-button:hover,
+.text-button:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+.back-link {
+  margin-bottom: 8px;
+}
+
+.back-link .button-icon {
+  transform: rotate(180deg);
+}
+
+.traffic-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 18px;
+}
+
+.traffic-detail-map-panel {
+  min-height: 560px;
+}
+
+.traffic-detail-map {
+  min-height: 500px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.traffic-detail-side {
+  align-self: start;
+  display: grid;
+  gap: 18px;
+}
+
+.detail-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.detail-list div {
+  display: grid;
+  gap: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-list dt {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.detail-list dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 780;
+}
+
+.route-summary {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid rgba(24, 95, 165, 0.2);
+  border-radius: 8px;
+  background: var(--accent-blue-soft);
+}
+
+.route-summary strong {
+  color: var(--accent-blue);
+}
+
+.route-summary span,
+.route-summary small {
+  color: var(--text-primary);
+}

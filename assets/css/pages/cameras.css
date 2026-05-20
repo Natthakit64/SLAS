@@ -1,0 +1,74 @@
+.camera-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.camera-tile {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  min-height: 150px;
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 34%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 5px),
+    #1a1a1a;
+}
+
+.camera-tile::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 44px 44px;
+  content: "";
+}
+
+.camera-name {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  z-index: 2;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.camera-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #1a1a1a;
+  border-radius: 50%;
+  background: var(--status);
+}
+
+.camera-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.62);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.camera-tile:hover .camera-overlay,
+.camera-tile:focus-within .camera-overlay {
+  opacity: 1;
+}
+
+.camera-overlay strong {
+  font-size: 16px;
+}
+
+.camera-overlay span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+}

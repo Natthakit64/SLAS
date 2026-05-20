@@ -1,0 +1,17 @@
+.dashboard-grid,
+.planning-grid,
+
+.two-column-grid,
+.chart-pair,
+.heatmap-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.dashboard-grid {
+  grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+}
+
+.planning-grid {
+  grid-template-columns: minmax(300px, 2fr) minmax(0, 3fr);
+}

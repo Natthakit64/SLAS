@@ -1,0 +1,132 @@
+.bar-label {
+  fill: #6f6e67;
+  font-size: 11px;
+}
+
+.report-header {
+  margin-bottom: 0;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 18px;
+}
+
+.large-donut .donut {
+  width: min(280px, 100%);
+}
+
+.heatmap-grid-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.density-grid {
+  display: grid;
+  grid-template-columns: 128px repeat(24, 32px);
+  min-width: 896px;
+}
+
+.density-cell,
+.density-road,
+.density-hour {
+  display: grid;
+  place-items: center;
+  min-height: 30px;
+  border-right: 1px solid #f0ece3;
+  border-bottom: 1px solid #f0ece3;
+  font-size: 11px;
+}
+
+.density-road,
+.density-hour {
+  color: var(--text-secondary);
+  background: #fffaf1;
+  font-weight: 720;
+}
+
+.density-cell.level-1 {
+  background: #e9f5df;
+}
+
+.density-cell.level-2 {
+  background: #b9d986;
+}
+
+.density-cell.level-3 {
+  background: #f3c66e;
+}
+
+.density-cell.level-4 {
+  background: #dd7844;
+}
+
+.density-cell.level-5 {
+  background: #a32d2d;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tab {
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 760;
+}
+
+.tab.is-active,
+.tab:hover,
+.tab:focus-visible {
+  color: var(--accent-green);
+  background: var(--accent-green-soft);
+  outline: none;
+}
+
+.heatmap-control {
+  align-self: start;
+}
+
+.intensity-scale {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 18px;
+}
+
+.scale-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e9f5df, #b9d986, #f3c66e, #dd7844, #a32d2d);
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;
+}
+
+.trend.up {
+  color: var(--accent-green);
+}
+
+.trend.down {
+  color: var(--accent-red);
+}
+
+.trend.flat {
+  color: var(--accent-amber);
+}

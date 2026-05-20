@@ -1,0 +1,143 @@
+@media (max-width: 1200px) {
+  .stat-grid,
+  .camera-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .accident-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-grid,
+  .planning-grid,
+  .comparison-grid,
+  .heatmap-layout,
+  .traffic-detail-layout,
+  .traffic-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    width: var(--sidebar-rail);
+  }
+
+  .brand {
+    justify-content: center;
+    padding-inline: 12px;
+  }
+
+  .brand-name,
+  .nav-copy,
+  .profile-copy,
+  .chevron {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .submenu {
+    padding-left: 0;
+  }
+
+  .profile-mini {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding-inline: 8px;
+  }
+
+  .main {
+    margin-left: var(--sidebar-rail);
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 14px 16px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .stat-grid,
+  .metric-grid,
+  .two-column-grid,
+    .chart-pair,
+    .accident-grid,
+    .camera-grid,
+    .filter-bar,
+    .filter-bar.camera-filter,
+    .traffic-search-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .donut-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-header,
+  .section-header,
+  .report-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .button-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-actions {
+    min-width: 0;
+  }
+
+  .map-legend {
+    position: static;
+    margin: 12px;
+  }
+
+  .planning-map-panel {
+    min-height: calc(100vh - 118px);
+    padding: 12px;
+  }
+
+  .planning-map-header {
+    flex-direction: column;
+  }
+
+  .traffic-density-strip {
+    justify-content: flex-start;
+  }
+
+  .traffic-map-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .traffic-map-wrap {
+    min-height: 66vh;
+  }
+
+  .traffic-map-hint {
+    top: 10px;
+    font-size: 11px;
+  }
+
+  .traffic-map-legend {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    margin: 0;
+  }
+}
