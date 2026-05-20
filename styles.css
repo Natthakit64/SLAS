@@ -460,6 +460,131 @@ h3 {
   grid-template-columns: minmax(300px, 2fr) minmax(0, 3fr);
 }
 
+.planning-map-page {
+  min-height: calc(100vh - 130px);
+}
+
+.planning-map-panel {
+  display: grid;
+  min-height: calc(100vh - 130px);
+  gap: 14px;
+  padding: 16px;
+}
+
+.planning-map-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.traffic-density-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.density-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.density-pill.is-active {
+  color: var(--accent-green);
+  border-color: rgba(59, 109, 17, 0.36);
+  background: var(--accent-green-soft);
+}
+
+.traffic-map-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.traffic-stat {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.traffic-stat span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.traffic-stat strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.traffic-map-wrap {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(520px, calc(100vh - 270px), 780px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #eef2eb;
+}
+
+.traffic-live-map {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+}
+
+.traffic-live-map .leaflet-control-attribution {
+  font-size: 10px;
+}
+
+.traffic-map-hint {
+  position: absolute;
+  z-index: 500;
+  top: 14px;
+  left: 50%;
+  max-width: min(520px, calc(100% - 28px));
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  border: 1px solid rgba(232, 228, 218, 0.92);
+  border-radius: 8px;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 20px rgba(38, 38, 34, 0.08);
+  font-size: 12px;
+  font-weight: 760;
+  pointer-events: none;
+}
+
+.traffic-map-legend {
+  z-index: 500;
+}
+
+.map-fallback {
+  display: grid;
+  min-height: inherit;
+  place-items: center;
+  padding: 24px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
 .two-column-grid,
 .chart-pair {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -993,6 +1118,79 @@ tbody tr:last-child td {
   background: var(--dot);
 }
 
+.vehicle-marker-shell {
+  border: 0;
+  background: transparent;
+}
+
+.vehicle-marker {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--vehicle-color, var(--accent-green));
+  box-shadow: 0 7px 18px rgba(31, 35, 28, 0.24);
+  cursor: pointer;
+}
+
+.vehicle-marker:focus-visible {
+  outline: 3px solid rgba(24, 95, 165, 0.22);
+  outline-offset: 2px;
+}
+
+.vehicle-marker.is-selected {
+  box-shadow: 0 0 0 4px rgba(24, 95, 165, 0.24), 0 10px 20px rgba(31, 35, 28, 0.26);
+}
+
+.vehicle-marker.density-low {
+  --vehicle-color: #3b6d11;
+}
+
+.vehicle-marker.density-moderate {
+  --vehicle-color: #185fa5;
+}
+
+.vehicle-marker.density-heavy {
+  --vehicle-color: #ba7517;
+}
+
+.vehicle-marker.density-severe {
+  --vehicle-color: #a32d2d;
+}
+
+.vehicle-car {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 13px;
+  transform: rotate(var(--heading));
+  transform-origin: 50% 50%;
+}
+
+.vehicle-car i {
+  display: block;
+  line-height: 1;
+}
+
+.vehicle-popup {
+  display: grid;
+  gap: 3px;
+  min-width: 170px;
+}
+
+.vehicle-popup strong {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.vehicle-popup span {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
 .accident-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1365,5 +1563,39 @@ tbody tr:last-child td {
   .map-legend {
     position: static;
     margin: 12px;
+  }
+
+  .planning-map-panel {
+    min-height: calc(100vh - 118px);
+    padding: 12px;
+  }
+
+  .planning-map-header {
+    flex-direction: column;
+  }
+
+  .traffic-density-strip {
+    justify-content: flex-start;
+  }
+
+  .traffic-map-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .traffic-map-wrap {
+    min-height: 66vh;
+  }
+
+  .traffic-map-hint {
+    top: 10px;
+    font-size: 11px;
+  }
+
+  .traffic-map-legend {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    margin: 0;
   }
 }

@@ -702,91 +702,128 @@ function renderTrafficSearch() {
   `;
 }
 
-function cityRoadMap() {
-  return `
-    <div class="map-placeholder">
-      <svg viewBox="0 0 900 520" role="img" aria-label="แผนที่จำลอง Simulated map">
-        <rect width="900" height="520" fill="#f2f2ef"></rect>
-        <g stroke="#d7d4cc" stroke-width="3">
-          <path d="M90 60V460"></path><path d="M240 35V490"></path><path d="M405 60V462"></path><path d="M570 30V494"></path><path d="M740 52V470"></path>
-          <path d="M42 100H845"></path><path d="M64 210H870"></path><path d="M38 328H832"></path><path d="M82 430H858"></path>
-        </g>
-        <g stroke="#bdb9ae" stroke-width="10" stroke-linecap="round">
-          <path d="M90 210C210 180 300 188 405 210S610 255 740 210"></path>
-          <path d="M240 35C250 145 270 228 405 328S650 425 820 430"></path>
-        </g>
-        <g>
-          <circle cx="90" cy="210" r="12" fill="#3B6D11"></circle>
-          <circle cx="240" cy="210" r="12" fill="#BA7517"></circle>
-          <circle cx="405" cy="210" r="12" fill="#3B6D11"></circle>
-          <circle cx="570" cy="328" r="12" fill="#A32D2D"></circle>
-          <circle cx="740" cy="210" r="12" fill="#3B6D11"></circle>
-          <circle cx="405" cy="430" r="12" fill="#BA7517"></circle>
-          <circle cx="740" cy="430" r="12" fill="#3B6D11"></circle>
-        </g>
-      </svg>
-      <div class="map-legend">
-        <span class="legend-chip"><span class="status-dot" style="--dot:#3B6D11"></span>ปกติ Normal</span>
-        <span class="legend-chip"><span class="status-dot" style="--dot:#BA7517"></span>หนาแน่น Congested</span>
-        <span class="legend-chip"><span class="status-dot" style="--dot:#A32D2D"></span>ปิดกั้น Blocked</span>
-      </div>
-    </div>
-  `;
-}
+const planningBoundary = [
+  [13.888053, 100.574482],
+  [13.885553, 100.573101],
+  [13.882373, 100.574206],
+  [13.883734, 100.577719],
+];
+
+const planningRoads = [
+  {
+    name: "Chaeng Watthana Road",
+    points: [
+      [13.88672, 100.57318],
+      [13.88638, 100.57392],
+      [13.88605, 100.57472],
+      [13.88572, 100.5755],
+      [13.88542, 100.57638],
+      [13.88516, 100.57756],
+    ],
+  },
+  {
+    name: "NT Frontage Road",
+    points: [
+      [13.88794, 100.57446],
+      [13.88728, 100.57454],
+      [13.88666, 100.57475],
+      [13.8861, 100.5751],
+      [13.88552, 100.57568],
+    ],
+  },
+  {
+    name: "NT Campus Connector",
+    points: [
+      [13.88608, 100.57432],
+      [13.88548, 100.57462],
+      [13.88488, 100.57504],
+      [13.88426, 100.57562],
+      [13.88374, 100.57642],
+    ],
+  },
+  {
+    name: "Soi Link East",
+    points: [
+      [13.88554, 100.57318],
+      [13.88508, 100.57394],
+      [13.88468, 100.57476],
+      [13.88426, 100.57572],
+      [13.88384, 100.57754],
+    ],
+  },
+  {
+    name: "North Access",
+    points: [
+      [13.88798, 100.57448],
+      [13.88736, 100.57494],
+      [13.88674, 100.5755],
+      [13.88608, 100.57624],
+      [13.88536, 100.5771],
+    ],
+  },
+  {
+    name: "South Access Road",
+    points: [
+      [13.88248, 100.57432],
+      [13.88338, 100.57482],
+      [13.88405, 100.57534],
+      [13.88482, 100.57606],
+      [13.88518, 100.57746],
+    ],
+  },
+];
+
+const planningDensityModes = [
+  { id: "low", th: "เบาบาง", en: "Low", vehicles: 10, speed: 42, color: "#3b6d11", duration: 10000 },
+  { id: "moderate", th: "ปานกลาง", en: "Moderate", vehicles: 22, speed: 34, color: "#185fa5", duration: 10000 },
+  { id: "heavy", th: "หนาแน่น", en: "Heavy", vehicles: 38, speed: 24, color: "#ba7517", duration: 10000 },
+  { id: "severe", th: "หนาแน่นมาก", en: "Severe", vehicles: 58, speed: 15, color: "#a32d2d", duration: 10000 },
+];
+
+let planningMapRuntime = null;
 
 function renderPlanning() {
   return `
-    <section class="planning-grid">
-      <article class="panel control-panel">
-        <div class="panel-header">
+    <section class="planning-map-page">
+      <article class="panel planning-map-panel">
+        <div class="planning-map-header">
           <div class="panel-title">
-            <h2>แผนควบคุมสัญญาณ</h2>
-            <p>Traffic Signal Plan</p>
+            <h2>แผนที่จราจร NT แจ้งวัฒนะ</h2>
+            <p>Live traffic simulation around 13.888053, 100.574482</p>
+          </div>
+          <div class="traffic-density-strip" aria-label="สถานะความหนาแน่น Traffic density status">
+            <span class="density-pill is-active" data-density-pill="low">เบาบาง</span>
+            <span class="density-pill" data-density-pill="moderate">ปานกลาง</span>
+            <span class="density-pill" data-density-pill="heavy">หนาแน่น</span>
+            <span class="density-pill" data-density-pill="severe">หนาแน่นมาก</span>
           </div>
         </div>
-        <div class="field">
-          <label for="startDateTime">เวลาเริ่ม Start time</label>
-          <input class="input" id="startDateTime" type="datetime-local" value="2026-05-20T08:00" />
-        </div>
-        <div class="field">
-          <label for="endDateTime">เวลาสิ้นสุด End time</label>
-          <input class="input" id="endDateTime" type="datetime-local" value="2026-05-20T18:00" />
-        </div>
-        <div class="field">
-          <label for="roadSelector">ถนน Road</label>
-          <select class="select" id="roadSelector">
-            <option>Rama IV Corridor</option>
-            <option>Sathorn North</option>
-            <option>Asoke Junction</option>
-            <option>Ratchada Tunnel</option>
-          </select>
-        </div>
-        <div class="range-row">
-          <label for="greenPhase">ไฟเขียว Green phase</label>
-          <span class="range-value">42s</span>
-          <input class="range-input timing-slider" id="greenPhase" type="range" min="20" max="90" value="42" />
-        </div>
-        <div class="range-row">
-          <label for="yellowPhase">ไฟเหลือง Yellow phase</label>
-          <span class="range-value">5s</span>
-          <input class="range-input timing-slider" id="yellowPhase" type="range" min="3" max="12" value="5" />
-        </div>
-        <div class="range-row">
-          <label for="redPhase">ไฟแดง Red phase</label>
-          <span class="range-value">50s</span>
-          <input class="range-input timing-slider" id="redPhase" type="range" min="20" max="100" value="50" />
-        </div>
-        <button class="button primary" type="button">${iconSpan("route")}ใช้แผน Apply Plan</button>
-      </article>
 
-      <article class="panel map-card">
-        <div class="panel-header">
-          <div class="panel-title">
-            <h2>แผนที่จำลอง</h2>
-            <p>Simulated Map</p>
+        <div class="traffic-map-stats" aria-live="polite">
+          <div class="traffic-stat">
+            <span>ระดับความหนาแน่น</span>
+            <strong id="planningDensityLabel">เบาบาง</strong>
+          </div>
+          <div class="traffic-stat">
+            <span>รถที่แสดง</span>
+            <strong id="planningVehicleCount">10 คัน</strong>
+          </div>
+          <div class="traffic-stat">
+            <span>ความเร็วเฉลี่ย</span>
+            <strong id="planningAvgSpeed">42 กม./ชม.</strong>
           </div>
         </div>
-        ${cityRoadMap()}
+
+        <div class="traffic-map-wrap">
+          <div id="planningTrafficMap" class="traffic-live-map" role="img" aria-label="แผนที่จราจรจำลองพื้นที่ NT แจ้งวัฒนะ"></div>
+          <div class="traffic-map-hint">แตะรถเพื่อดูเส้นทางย้อนหลัง</div>
+          <div class="map-legend traffic-map-legend">
+            <span class="legend-chip"><span class="status-dot" style="--dot:#3b6d11"></span>เบาบาง</span>
+            <span class="legend-chip"><span class="status-dot" style="--dot:#185fa5"></span>ปานกลาง</span>
+            <span class="legend-chip"><span class="status-dot" style="--dot:#ba7517"></span>หนาแน่น</span>
+            <span class="legend-chip"><span class="status-dot" style="--dot:#a32d2d"></span>หนาแน่นมาก</span>
+          </div>
+        </div>
       </article>
     </section>
   `;
@@ -1125,6 +1162,296 @@ function renderHeatmaps() {
   `;
 }
 
+function pointInPlanningBoundary(point) {
+  const [lat, lng] = point;
+  let inside = false;
+
+  for (let i = 0, j = planningBoundary.length - 1; i < planningBoundary.length; j = i++) {
+    const [latI, lngI] = planningBoundary[i];
+    const [latJ, lngJ] = planningBoundary[j];
+    const intersects = lngI > lng !== lngJ > lng && lat < ((latJ - latI) * (lng - lngI)) / (lngJ - lngI) + latI;
+    if (intersects) inside = !inside;
+  }
+
+  return inside;
+}
+
+function randomBetween(min, max) {
+  return min + Math.random() * (max - min);
+}
+
+function routeLength(points) {
+  return points.slice(1).reduce((total, point, index) => {
+    const previous = points[index];
+    return total + Math.hypot(point[0] - previous[0], point[1] - previous[1]);
+  }, 0);
+}
+
+function pointOnRoute(points, progress) {
+  const safeProgress = Math.min(Math.max(progress, 0), 1);
+  const totalLength = routeLength(points);
+  let walked = 0;
+
+  for (let index = 1; index < points.length; index += 1) {
+    const start = points[index - 1];
+    const end = points[index];
+    const segmentLength = Math.hypot(end[0] - start[0], end[1] - start[1]);
+    const target = safeProgress * totalLength;
+
+    if (walked + segmentLength >= target) {
+      const ratio = segmentLength ? (target - walked) / segmentLength : 0;
+      return [start[0] + (end[0] - start[0]) * ratio, start[1] + (end[1] - start[1]) * ratio];
+    }
+
+    walked += segmentLength;
+  }
+
+  return points[points.length - 1];
+}
+
+function headingOnRoute(points, progress) {
+  const safeProgress = Math.min(Math.max(progress, 0), 1);
+  const ahead = pointOnRoute(points, Math.min(safeProgress + 0.012, 1));
+  const behind = pointOnRoute(points, Math.max(safeProgress - 0.012, 0));
+  return Math.atan2(ahead[1] - behind[1], ahead[0] - behind[0]) * (180 / Math.PI) + 90;
+}
+
+
+function assignVehicleRoute(vehicle, shouldKeepHistory = false) {
+  const route = planningRoads[Math.floor(Math.random() * planningRoads.length)];
+  const reverse = Math.random() > 0.5;
+  vehicle.routeName = route.name;
+  vehicle.points = reverse ? [...route.points].reverse() : route.points;
+  vehicle.progress = randomBetween(0, 0.92);
+  vehicle.duration = randomBetween(24000, 56000);
+
+  if (!shouldKeepHistory) {
+    vehicle.historySegments = [[]];
+  } else {
+    vehicle.historySegments.push([]);
+    if (vehicle.historySegments.length > 20) vehicle.historySegments.shift();
+  }
+
+}
+
+
+function planningPopupHtml(vehicle, densityMode) {
+  return `
+    <div class="vehicle-popup">
+      <strong>${vehicle.id}</strong>
+      <span>${vehicle.routeName}</span>
+      <span>ความหนาแน่น: ${densityMode.th}</span>
+      <span>ความเร็วประมาณ: ${Math.max(8, Math.round(densityMode.speed + vehicle.speedOffset))} กม./ชม.</span>
+    </div>
+  `;
+}
+
+function cleanupPlanningMap() {
+  if (!planningMapRuntime) return;
+
+  cancelAnimationFrame(planningMapRuntime.animationFrame);
+  clearTimeout(planningMapRuntime.densityTimer);
+  planningMapRuntime.resizeObserver?.disconnect();
+  planningMapRuntime.map.remove();
+  planningMapRuntime = null;
+}
+
+function findNextRoad(currentName, endPoint) {
+  let best = null;
+  let bestDist = Infinity;
+  let bestReverse = false;
+  planningRoads.forEach((road) => {
+    if (road.name === currentName) return;
+    const s = Math.hypot(road.points[0][0] - endPoint[0], road.points[0][1] - endPoint[1]);
+    const e = Math.hypot(road.points[road.points.length - 1][0] - endPoint[0], road.points[road.points.length - 1][1] - endPoint[1]);
+    if (s < bestDist) { bestDist = s; best = road; bestReverse = false; }
+    if (e < bestDist) { bestDist = e; best = road; bestReverse = true; }
+  });
+  return best ? { points: bestReverse ? [...best.points].reverse() : best.points, name: best.name } : null;
+}
+
+function bindPlanningMapInteractions() {
+  const mapElement = document.querySelector("#planningTrafficMap");
+  if (!mapElement) return;
+
+  cleanupPlanningMap();
+
+  if (!window.L) {
+    mapElement.innerHTML = `<div class="map-fallback">ไม่สามารถโหลด Leaflet ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</div>`;
+    return;
+  }
+
+  const bounds = L.latLngBounds(planningBoundary);
+  const map = L.map(mapElement, { zoomControl: true, scrollWheelZoom: true, preferCanvas: true });
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 20,
+  }).addTo(map);
+
+  map.fitBounds(bounds, { padding: [24, 24] });
+
+  planningRoads.forEach((road) => L.polyline(road.points, { opacity: 0, weight: 0 }).addTo(map));
+
+  const runtime = {
+    animationFrame: null,
+    densityIndex: 0,
+    densityTimer: null,
+    lastFrame: performance.now(),
+    map,
+    resizeObserver: null,
+    selectedTrail: null,
+    selectedVehicle: null,
+    vehicles: [],
+  };
+
+  planningMapRuntime = runtime;
+
+  function circleStyle(densityMode, isSelected) {
+    return {
+      radius: isSelected ? 10 : 7,
+      color: isSelected ? "#1a73e8" : "#ffffff",
+      fillColor: densityMode.color,
+      fillOpacity: 0.92,
+      weight: isSelected ? 3 : 1.5,
+    };
+  }
+
+  function deselectVehicle() {
+    if (!runtime.selectedVehicle) return;
+    runtime.selectedVehicle.isSelected = false;
+    runtime.selectedVehicle.marker.setStyle(circleStyle(planningDensityModes[runtime.densityIndex], false));
+    runtime.selectedVehicle.marker.closePopup();
+    runtime.selectedVehicle = null;
+    if (runtime.selectedTrail) { runtime.selectedTrail.remove(); runtime.selectedTrail = null; }
+  }
+
+  function selectVehicle(vehicle) {
+    if (vehicle.isSelected) { deselectVehicle(); return; }
+    deselectVehicle();
+    vehicle.isSelected = true;
+    runtime.selectedVehicle = vehicle;
+    vehicle.marker.setStyle(circleStyle(planningDensityModes[runtime.densityIndex], true));
+    runtime.selectedTrail = L.polyline(vehicle.historySegments, {
+      color: "#1a73e8",
+      weight: 9,
+      opacity: 0.85,
+      lineCap: "round",
+      lineJoin: "round",
+    }).addTo(map);
+    vehicle.marker.bindPopup(planningPopupHtml(vehicle, planningDensityModes[runtime.densityIndex])).openPopup();
+  }
+
+  function createVehicle(index) {
+    const densityMode = planningDensityModes[runtime.densityIndex];
+    const vehicle = {
+      id: `NT-${String(index + 1).padStart(3, "0")}`,
+      direction: Math.random() > 0.5 ? 1 : -1,
+      historySegments: [[]],
+      isSelected: false,
+      marker: null,
+      speedOffset: randomBetween(-4, 5),
+    };
+    assignVehicleRoute(vehicle);
+    vehicle.marker = L.circleMarker(pointOnRoute(vehicle.points, vehicle.progress), circleStyle(densityMode, false)).addTo(map);
+    vehicle.marker.on("click", () => selectVehicle(vehicle));
+    return vehicle;
+  }
+
+  function syncVehicleFleet() {
+    const densityMode = planningDensityModes[runtime.densityIndex];
+    while (runtime.vehicles.length < densityMode.vehicles) runtime.vehicles.push(createVehicle(runtime.vehicles.length));
+    while (runtime.vehicles.length > densityMode.vehicles) {
+      const idx = runtime.vehicles.findIndex((v) => v !== runtime.selectedVehicle);
+      const [v] = runtime.vehicles.splice(idx === -1 ? runtime.vehicles.length - 1 : idx, 1);
+      v.marker.remove();
+    }
+  }
+
+  function updateDensityUi() {
+    const densityMode = planningDensityModes[runtime.densityIndex];
+    document.querySelector("#planningDensityLabel").textContent = `${densityMode.th} (${densityMode.en})`;
+    document.querySelector("#planningVehicleCount").textContent = `${formatNumber(densityMode.vehicles)} คัน`;
+    document.querySelector("#planningAvgSpeed").textContent = `${densityMode.speed} กม./ชม.`;
+    document.querySelectorAll("[data-density-pill]").forEach((pill) => {
+      pill.classList.toggle("is-active", pill.dataset.densityPill === densityMode.id);
+    });
+    runtime.vehicles.forEach((v) => v.marker.setStyle(circleStyle(densityMode, v.isSelected)));
+  }
+
+  function cycleDensity() {
+    runtime.densityIndex = (runtime.densityIndex + 1) % planningDensityModes.length;
+    updateDensityUi();
+    syncVehicleFleet();
+    runtime.densityTimer = setTimeout(cycleDensity, planningDensityModes[runtime.densityIndex].duration);
+  }
+
+  document.querySelectorAll("[data-density-pill]").forEach((pill) => {
+    pill.style.cursor = "pointer";
+    pill.addEventListener("click", () => {
+      const newIndex = planningDensityModes.findIndex((m) => m.id === pill.dataset.densityPill);
+      if (newIndex !== -1 && newIndex !== runtime.densityIndex) {
+        clearTimeout(runtime.densityTimer);
+        runtime.densityIndex = newIndex;
+        updateDensityUi();
+        syncVehicleFleet();
+        runtime.densityTimer = setTimeout(cycleDensity, planningDensityModes[runtime.densityIndex].duration);
+      }
+    });
+  });
+
+  function animate(now) {
+    const delta = Math.min(now - runtime.lastFrame, 80);
+    const densityMode = planningDensityModes[runtime.densityIndex];
+    const speedFactor = 1 + runtime.densityIndex * 0.42;
+    runtime.lastFrame = now;
+
+    runtime.vehicles.forEach((vehicle) => {
+      vehicle.progress += (delta / (vehicle.duration * speedFactor)) * vehicle.direction;
+
+      if (vehicle.progress >= 1) {
+        vehicle.progress = 1;
+        vehicle.direction = -1;
+        const next = findNextRoad(vehicle.routeName, vehicle.points[vehicle.points.length - 1]);
+        if (next) { vehicle.routeName = next.name; vehicle.points = next.points; vehicle.progress = 0; vehicle.direction = 1; }
+        vehicle.historySegments.push([]);
+        if (vehicle.historySegments.length > 20) vehicle.historySegments.shift();
+      } else if (vehicle.progress <= 0) {
+        vehicle.progress = 0;
+        vehicle.direction = 1;
+        const next = findNextRoad(vehicle.routeName, vehicle.points[0]);
+        if (next) { vehicle.routeName = next.name; vehicle.points = next.points; vehicle.progress = 1; vehicle.direction = -1; }
+        vehicle.historySegments.push([]);
+        if (vehicle.historySegments.length > 20) vehicle.historySegments.shift();
+      }
+
+      const position = pointOnRoute(vehicle.points, vehicle.progress);
+      vehicle.marker.setLatLng(position);
+
+      const seg = vehicle.historySegments[vehicle.historySegments.length - 1];
+      seg.push(position);
+      if (seg.length > 400) seg.shift();
+
+      if (vehicle.isSelected) {
+        if (runtime.selectedTrail) runtime.selectedTrail.setLatLngs(vehicle.historySegments);
+        if (vehicle.marker.isPopupOpen()) vehicle.marker.setPopupContent(planningPopupHtml(vehicle, densityMode));
+      }
+    });
+
+    runtime.animationFrame = requestAnimationFrame(animate);
+  }
+
+  syncVehicleFleet();
+  updateDensityUi();
+  runtime.densityTimer = setTimeout(cycleDensity, planningDensityModes[0].duration);
+  runtime.animationFrame = requestAnimationFrame(animate);
+  if (window.ResizeObserver) {
+    runtime.resizeObserver = new ResizeObserver(() => map.invalidateSize());
+    runtime.resizeObserver.observe(mapElement);
+  }
+  setTimeout(() => map.invalidateSize(), 100);
+}
+
 const pageRenderers = {
   dashboard: renderDashboard,
   trafficSearch: renderTrafficSearch,
@@ -1288,9 +1615,11 @@ function bindPageInteractions() {
   });
 
   bindTrafficSearchInteractions();
+  bindPlanningMapInteractions();
 }
 
 function renderPage() {
+  cleanupPlanningMap();
   const meta = pageMeta[activePage];
   pageTitle.textContent = meta.th;
   pageEyebrow.textContent = meta.en;
