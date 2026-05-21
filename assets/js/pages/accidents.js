@@ -1,3 +1,17 @@
+const accidentEvidenceImages = {
+  // Add more incident images here when evidence files are ready.
+  "INC-2401": "212121.png",
+  "INC-2402": "25452.png",
+};
+
+function accidentRecord(id) {
+  return accidentCards.find((item) => item.id === id) ?? accidentCards[0];
+}
+
+function accidentEvidenceImage(id) {
+  return accidentEvidenceImages[id] ?? "";
+}
+
 function renderAccidents() {
   return `
     <div class="page-stack">
@@ -26,7 +40,7 @@ function renderAccidents() {
                 </dl>
                 <footer>
                   <span class="badge ${item.status}">${statusLabel(item.status)}</span>
-                  <a class="text-link" href="#">ดูรายละเอียด View Details</a>
+                  <button class="text-button" type="button" data-accident-detail="${item.id}">ดูรายละเอียด View Details</button>
                 </footer>
               </article>
             `,
@@ -37,3 +51,60 @@ function renderAccidents() {
   `;
 }
 
+function renderAccidentDetail() {
+  const item = accidentRecord(selectedAccidentId);
+  const evidenceImage = accidentEvidenceImage(item.id);
+
+  return `
+    <div class="page-stack accident-detail-page">
+      <section class="section-header accident-detail-header">
+        <div>
+          <button class="text-button back-link" type="button" data-back-to-accidents>${iconSpan("chevron")}กลับไปรายงานอุบัติเหตุ Back to Accident Report</button>
+          <h2>${item.id}</h2>
+          <p>${item.location} · ${item.type} · ${item.time}</p>
+        </div>
+        <div class="accident-detail-badges">
+          <span class="badge ${item.severity}">${severityLabel(item.severity)}</span>
+          <span class="badge ${item.status}">${statusLabel(item.status)}</span>
+        </div>
+      </section>
+
+      <section class="accident-detail-layout">
+        <article class="panel accident-evidence-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h2>รูปเหตุการณ์</h2>
+              <p>Incident evidence image</p>
+            </div>
+          </div>
+          ${
+            evidenceImage
+              ? `<figure class="accident-evidence-frame">
+                  <img src="${evidenceImage}" alt="ภาพหลักฐานเหตุการณ์ ${item.id}" />
+                </figure>`
+              : `<div class="accident-evidence-placeholder">
+                  <strong>ยังไม่มีรูปเหตุการณ์</strong>
+                  <span>เตรียมช่องไว้สำหรับแนบรูปของ ${item.id}</span>
+                </div>`
+          }
+        </article>
+
+        <aside class="panel accident-detail-side">
+          <div class="panel-title">
+            <h2>รายละเอียดเหตุการณ์</h2>
+            <p>Incident detail</p>
+          </div>
+          <dl class="detail-list">
+            <div><dt>รหัส Incident ID</dt><dd>${item.id}</dd></div>
+            <div><dt>พื้นที่ Location</dt><dd>${item.location}</dd></div>
+            <div><dt>เวลา Time</dt><dd>${item.time}</dd></div>
+            <div><dt>ประเภท Type</dt><dd>${item.type}</dd></div>
+            <div><dt>จำนวนรถ Vehicles involved</dt><dd>${item.vehicles}</dd></div>
+            <div><dt>ระดับ Severity</dt><dd><span class="badge ${item.severity}">${severityLabel(item.severity)}</span></dd></div>
+            <div><dt>สถานะ Status</dt><dd><span class="badge ${item.status}">${statusLabel(item.status)}</span></dd></div>
+          </dl>
+        </aside>
+      </section>
+    </div>
+  `;
+}

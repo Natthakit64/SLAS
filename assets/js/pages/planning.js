@@ -97,27 +97,96 @@ function cameraPoint(cameraId) {
   return cameraStop(cameraId)?.point;
 }
 
-function cameraSegments(cameraIds, points) {
-  return points.slice(1).map((point, index) => ({
-    from: cameraIds[index],
-    to: cameraIds[index + 1],
-    points: [points[index], point],
-  }));
+const planningRoadSegmentDefinitions = [
+  // Road segment waypoints are only guide points for bending the route along the road.
+  // Move the points inside `waypoints`; the camera endpoints are read from planningCameraPoints.
+  // Segment: Camera 01 -> Camera 03
+  { from: "CAM-01", to: "CAM-03", waypoints: [[13.887574, 100.575087], [13.887424, 100.575095], [13.886828, 100.574870], [13.88618, 100.57468]] },
+
+  // Segment: Gate 3 -> Camera 03
+  { from: "Gate-3", to: "CAM-03", waypoints: [[13.886460, 100.573694], [13.886175, 100.574646]] },
+
+  // Segment: Camera 03 -> Camera 04
+  { from: "CAM-03", to: "CAM-04", waypoints: [[13.885680, 100.574554], [13.883908, 100.573994], [13.883713, 100.574065]] },
+
+  // Segment: Camera 04 -> Camera 07
+  { from: "CAM-04", to: "CAM-07", waypoints: [[13.883687, 100.574111], [13.883065, 100.576004], [13.882878, 100.576825]] },
+
+  // Segment: Camera 07 -> Soi 5
+  { from: "CAM-07", to: "soi5", waypoints: [[13.88291, 100.57707]] },
+
+  // Segment: Camera 08 -> Camera 07
+  { from: "CAM-08", to: "CAM-07", waypoints: [[13.883948, 100.576291], [13.883136, 100.576070], [13.882885, 100.576904]] },
+
+  // Segment: Camera 08 -> Camera 04
+  { from: "CAM-08", to: "CAM-04", waypoints: [[13.883752, 100.576238],[13.883183, 100.575970],[13.883670, 100.574195]] },
+
+  // Segment: Camera 10 -> Camera 09
+  { from: "CAM-10", to: "CAM-09", waypoints: [[13.88664, 100.57631], [13.88628, 100.57626]] },
+
+  // Segment: Camera 09 -> Camera 08
+  { from: "CAM-09", to: "CAM-08", waypoints: [[13.885888, 100.576176], [13.885737, 100.576452], [13.885262, 100.576332], [13.885157, 100.576314],[13.885054, 100.576626], [13.884328, 100.576404]] },
+
+  // Segment: Camera 09 -> Camera 03
+  { from: "CAM-09", to: "CAM-03", waypoints: [[13.885879, 100.576078],[13.886199, 100.574859]] },
+];
+
+function roadSegmentKey(from, to) {
+  return `${from}__${to}`;
 }
 
-function cameraRoute(name, cameraIds) {
+function roadSegmentPoints(from, to, waypoints = []) {
+  return [cameraPoint(from), ...waypoints, cameraPoint(to)].filter(Boolean);
+}
+
+const planningRoadSegments = planningRoadSegmentDefinitions
+  .map((segment) => ({
+    ...segment,
+    key: roadSegmentKey(segment.from, segment.to),
+    points: roadSegmentPoints(segment.from, segment.to, segment.waypoints),
+  }))
+  .filter((segment) => segment.points.length > 1);
+
+function roadSegmentBetween(from, to) {
+  const direct = planningRoadSegments.find((segment) => segment.from === from && segment.to === to);
+  if (direct) return direct.points;
+
+  const reverse = planningRoadSegments.find((segment) => segment.from === to && segment.to === from);
+  if (reverse) return [...reverse.points].reverse();
+
+  return roadSegmentPoints(from, to);
+}
+
+function cameraSegments(cameraIds) {
+  return cameraIds.slice(1).map((to, index) => {
+    const from = cameraIds[index];
+    return {
+      from,
+      to,
+      points: roadSegmentBetween(from, to),
+    };
+  }).filter((segment) => segment.points.length > 1);
+}
+
+function routePointsFromSegments(segments) {
+  return segments.flatMap((segment, index) => (index === 0 ? segment.points : segment.points.slice(1)));
+}
+
+function cameraRoute(name, cameraIds, id = "") {
   const stops = cameraIds
     .map(cameraStop)
     .filter(Boolean);
 
   const routeCameraIds = stops.map((stop) => stop.id);
-  const routePoints = stops.map((stop) => stop.point);
+  const routeSegments = cameraSegments(routeCameraIds);
+  const routePoints = routePointsFromSegments(routeSegments);
 
   return {
+    id,
     name,
     cameraIds: routeCameraIds,
     points: routePoints,
-    segments: cameraSegments(routeCameraIds, routePoints),
+    segments: routeSegments,
   };
 }
 
@@ -125,15 +194,23 @@ const planningCameraRoutes = [
   // รถจำลองจะวิ่งตามลำดับกล้องในชุดนี้ โดยระบบจะแยกเป็น segment ย่อยแบบ 1->2, 2->3, 3->4 ให้อัตโนมัติ
   // ถ้าต้องการปรับเส้นทาง ให้ย้าย/เพิ่ม/ลบ camera id ใน cameraIds ของ route ที่ต้องการ
   // ถ้าย้ายพิกัดใน planningCameraPoints เส้นทางเหล่านี้จะขยับตามตำแหน่งกล้องอัตโนมัติ
-  cameraRoute("Camera Route 01-03", ["CAM-01", "CAM-03"]),
-  cameraRoute("Camera Route North-East", ["CAM-10", "CAM-09", "CAM-08"]),
-  cameraRoute("Camera Route West-South", ["Gate-3", "CAM-03", "CAM-04", "CAM-07", "soi5"]),
-  cameraRoute("Camera Route Cross Link", ["CAM-01", "CAM-10", "CAM-09", "CAM-03", "Gate-3"]),
-  cameraRoute("Camera Route Lower Link", ["CAM-04", "CAM-08", "CAM-07", "soi5"]),
+  cameraRoute("Camera Route 01-03", ["CAM-01", "CAM-03"], "route-01-03"),
+  cameraRoute("Camera Route North-East", ["CAM-10", "CAM-09", "CAM-08"], "route-north-east"),
+  cameraRoute("Camera Route West-South", ["Gate-3", "CAM-03", "CAM-04", "CAM-07", "soi5"], "route-west-south"),
+  cameraRoute("Camera Route East-Cross", ["CAM-10", "CAM-09", "CAM-03", "CAM-04"], "route-east-cross"),
+  cameraRoute("Camera Route Lower Link", ["CAM-08", "CAM-04", "CAM-07", "soi5"], "route-lower-link"),
+
+  // Debug route for plate ALL-SEG: runs through every defined segment so the whole guide line can be checked.
+  cameraRoute("Camera Route All Segments", ["CAM-01", "CAM-03", "Gate-3", "CAM-03", "CAM-04", "CAM-08", "CAM-07", "CAM-04", "CAM-07", "soi5", "CAM-07", "CAM-08", "CAM-09", "CAM-10", "CAM-09", "CAM-03"], "all-segments"),
 ].filter((route) => route.points.length > 1);
 
 function routeForTrafficRecord(record) {
-  const stop = cameraStop(record.camera);
+  if (record.routeId) {
+    const route = planningCameraRoutes.find((item) => item.id === record.routeId);
+    if (route) return route;
+  }
+
+  const stop = cameraStop(record.camera_id);
   if (!stop) return planningCameraRoutes[0];
   return planningCameraRoutes.find((route) => route.cameraIds.includes(stop.id)) ?? planningCameraRoutes[0];
 }
@@ -149,6 +226,7 @@ const routeConnectionMaxMeters = 25;
 
 let planningMapRuntime = null;
 let trafficDetailMapRuntime = null;
+let heatmapMapRuntime = null;
 
 function renderPlanning() {
   return `
@@ -186,6 +264,7 @@ function renderPlanning() {
           <div id="planningTrafficMap" class="traffic-live-map" role="img" aria-label="แผนที่จราจรจำลองพื้นที่ NT แจ้งวัฒนะ"></div>
           <div class="traffic-map-hint">แตะรถเพื่อดูเส้นทางกล้องของรถคันนั้น</div>
           <div class="map-legend traffic-map-legend">
+            <span class="legend-chip"><span class="status-dot route-guide-dot"></span>Segment guide</span>
             <span class="legend-chip"><span class="status-dot camera-dot"></span>กล้อง Camera</span>
             <span class="legend-chip"><span class="status-dot selected-route-dot"></span>เส้นทางที่เลือก</span>
             <span class="legend-chip"><span class="status-dot" style="--dot:#3b6d11"></span>เบาบาง</span>

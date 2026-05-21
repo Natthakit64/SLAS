@@ -9,15 +9,27 @@ function severityLabel(severity) {
 
 function statusLabel(status) {
   const labels = {
-    open: "เปิด Open",
-    resolved: "เสร็จสิ้น Resolved",
-    investigating: "ตรวจสอบ Investigating",
+    confirmed: "ยืนยันเหตุการณ์",
+    assisting: "กำลังช่วยเหลือ",
+    completed: "เสร็จสิ้น",
+    open: "ยืนยันเหตุการณ์",
+    Open: "ยืนยันเหตุการณ์",
+    investigating: "กำลังช่วยเหลือ",
+    Investigating: "กำลังช่วยเหลือ",
+    resolved: "เสร็จสิ้น",
+    Resolved: "เสร็จสิ้น",
   };
   return labels[status] ?? status;
 }
 
+function trafficRecordTime(record) {
+  const detectedAt = String(record.detected_at ?? record.time ?? "");
+  const timeMatch = detectedAt.match(/T(\d{2}:\d{2}:\d{2})/);
+  return timeMatch?.[1] ?? detectedAt;
+}
+
 function uniqueTrafficValues(key) {
-  return [...new Set(trafficRecords.map((record) => record[key]))].sort((a, b) => a.localeCompare(b, "th"));
+  return [...new Set(trafficRecords.map((record) => record[key]).filter(Boolean))].sort((a, b) => a.localeCompare(b, "th"));
 }
 
 function trafficFilterOptions(key) {
@@ -27,7 +39,7 @@ function trafficFilterOptions(key) {
 }
 
 function trafficCameraOptions() {
-  const cameras = [...new Map(trafficRecords.map((record) => [record.camera, `${record.camera} - ${record.location}`])).entries()];
+  const cameras = [...new Map(trafficRecords.map((record) => [record.camera_id, `${record.camera_id} - ${record.location ?? record.camera_id}`])).entries()];
   return cameras
     .sort(([cameraA], [cameraB]) => cameraA.localeCompare(cameraB))
     .map(([camera, label]) => `<option value="${camera}">${label}</option>`)
@@ -36,6 +48,7 @@ function trafficCameraOptions() {
 
 function vehicleTypeBadgeClass(type) {
   const classes = {
+    "Debug Route": "info",
     รถยนต์: "info",
     รถบรรทุก: "warning",
     จักรยานยนต์: "up",
@@ -46,6 +59,7 @@ function vehicleTypeBadgeClass(type) {
 
 function vehicleColorClass(color) {
   const classes = {
+    "Debug Blue": "color-blue",
     ขาว: "color-white",
     ดำ: "color-black",
     น้ำเงิน: "color-blue",
@@ -71,7 +85,7 @@ function renderColorDropdownOptions() {
 }
 
 function trafficRecordKey(record) {
-  return encodeURIComponent(`${record.time}|${record.camera}|${record.plate}`);
+  return encodeURIComponent(record.id ?? `${record.detected_at}|${record.camera_id}|${record.plate}`);
 }
 
 function findTrafficRecord(key) {
@@ -91,12 +105,12 @@ function renderTrafficRows(records) {
     .map(
       (record) => `
         <tr>
-          <td><strong>${record.time}</strong></td>
+          <td><strong>${trafficRecordTime(record)}</strong></td>
           <td>${record.location}</td>
-          <td>${record.camera}</td>
+          <td>${record.camera_id}</td>
           <td>${record.plate}</td>
-          <td>${record.model}</td>
-          <td><span class="badge ${vehicleTypeBadgeClass(record.type)}">${record.type}</span></td>
+          <td>${record.brand}</td>
+          <td><span class="badge ${vehicleTypeBadgeClass(record.vehicle_type)}">${record.vehicle_type}</span></td>
           <td><span class="color-chip"><span class="vehicle-color-dot ${vehicleColorClass(record.color)}"></span>${record.color}</span></td>
           <td>${record.direction}</td>
           <td>${record.speed} km/h</td>

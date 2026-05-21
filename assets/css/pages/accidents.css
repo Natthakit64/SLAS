@@ -43,3 +43,85 @@
   margin: 2px 0 0;
   font-weight: 760;
 }
+
+.accident-detail-page {
+  gap: 12px;
+}
+
+.accident-detail-header {
+  margin-bottom: 0;
+}
+
+.accident-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.accident-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  align-items: start;
+  gap: 18px;
+}
+
+.accident-evidence-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.accident-evidence-panel .panel-header {
+  margin-bottom: 0;
+}
+
+.accident-evidence-frame {
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f3f0e8;
+}
+
+.accident-evidence-frame img {
+  display: block;
+  width: 100%;
+  max-height: min(620px, 68vh);
+  object-fit: contain;
+  background: #111;
+}
+
+.accident-evidence-placeholder {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+  gap: 6px;
+  padding: 24px;
+  border: 1px dashed rgba(136, 135, 128, 0.52);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: #fffaf1;
+  text-align: center;
+}
+
+.accident-evidence-placeholder strong {
+  color: var(--text-primary);
+}
+
+.accident-detail-side {
+  align-self: start;
+  display: grid;
+  gap: 18px;
+}
+
+@media (max-width: 1200px) {
+  .accident-detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .accident-detail-badges {
+    justify-content: flex-start;
+  }
+}

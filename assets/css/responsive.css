@@ -140,4 +140,9 @@
     left: 10px;
     margin: 0;
   }
+
+  .traffic-detail-map {
+    height: 500px;
+    min-height: 300px;
+  }
 }

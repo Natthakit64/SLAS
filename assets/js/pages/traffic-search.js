@@ -11,17 +11,17 @@ function renderTrafficSearch() {
           <input class="input" id="trafficEndTime" name="endTime" type="time" step="1" value="23:59:59" />
         </div>
         <div class="field">
-          <label for="trafficModel">รุ่นรถ Vehicle model</label>
-          <select class="select" id="trafficModel" name="model">
-            <option value="">ทุกรุ่น All models</option>
-            ${trafficFilterOptions("model")}
+          <label for="trafficBrand">ยี่ห้อรถ Vehicle brand</label>
+          <select class="select" id="trafficBrand" name="brand">
+            <option value="">ทุกยี่ห้อ All brands</option>
+            ${trafficFilterOptions("brand")}
           </select>
         </div>
         <div class="field">
           <label for="trafficType">ประเภทรถ Vehicle type</label>
           <select class="select" id="trafficType" name="type">
             <option value="">ทุกประเภท All types</option>
-            ${trafficFilterOptions("type")}
+            ${trafficFilterOptions("vehicle_type")}
           </select>
         </div>
         <div class="field">
@@ -94,7 +94,7 @@ function renderTrafficSearch() {
                 <th>พื้นที่ Location</th>
                 <th>กล้อง Camera</th>
                 <th>ทะเบียน Plate</th>
-                <th>รุ่น Model</th>
+                <th>ยี่ห้อ Brand</th>
                 <th>ประเภท Type</th>
                 <th>สี Color</th>
                 <th>ทิศทาง Direction</th>
@@ -116,7 +116,7 @@ function renderTrafficDetail() {
   const record = findTrafficRecord(selectedTrafficRecordKey) ?? trafficRecords[0];
   const route = routeForTrafficRecord(record);
   const routeStops = route?.cameraIds?.join(" → ") ?? "-";
-  const selectedStop = cameraStop(record.camera);
+  const selectedStop = cameraStop(record.camera_id);
 
   return `
     <div class="page-stack traffic-detail-page">
@@ -124,9 +124,9 @@ function renderTrafficDetail() {
         <div>
           <button class="text-button back-link" type="button" data-back-to-search>${iconSpan("chevron")}กลับไปค้นหา Back to Search</button>
           <h2>${record.plate}</h2>
-          <p>${record.model} · ${record.type} · ${record.color} · ${record.time}</p>
+          <p>${record.brand} · ${record.vehicle_type} · ${record.color} · ${trafficRecordTime(record)}</p>
         </div>
-        <span class="badge info">${record.camera}</span>
+        <span class="badge info">${record.camera_id}</span>
       </section>
 
       <section class="traffic-detail-layout">
@@ -137,7 +137,18 @@ function renderTrafficDetail() {
               <p>Camera route segments</p>
             </div>
           </div>
-          <div id="trafficDetailMap" class="traffic-live-map traffic-detail-map" role="img" aria-label="แผนที่เส้นทางรถจากรายการ Traffic"></div>
+          <div class="traffic-detail-map-shell">
+            <div id="trafficDetailMap" class="traffic-live-map traffic-detail-map" role="img" aria-label="แผนที่เส้นทางรถจากรายการ Traffic"></div>
+            <button class="traffic-map-expand-button" type="button" data-expand-traffic-map aria-label="ขยายแผนที่เส้นทางรถ">
+              ${icon("expand")}
+            </button>
+          </div>
+          <div class="route-summary traffic-detail-route-summary">
+            <strong>Route</strong>
+            <span>${route?.name ?? "ไม่พบเส้นทาง"}</span>
+            <small>${routeStops}</small>
+            ${selectedStop ? `<small>จุดที่ตรวจพบ: ${selectedStop.id} ${selectedStop.name}</small>` : `<small>กล้องนี้ยังไม่มีพิกัดใน planningCameraPoints</small>`}
+          </div>
         </article>
 
         <aside class="panel traffic-detail-side">
@@ -147,24 +158,32 @@ function renderTrafficDetail() {
           </div>
           <dl class="detail-list">
             <div><dt>ทะเบียน Plate</dt><dd>${record.plate}</dd></div>
-            <div><dt>เวลา Time</dt><dd>${record.time}</dd></div>
-            <div><dt>กล้องที่ตรวจพบ Camera</dt><dd>${record.camera}</dd></div>
+            <div><dt>เวลา Time</dt><dd>${trafficRecordTime(record)}</dd></div>
+            <div><dt>กล้องที่ตรวจพบ Camera</dt><dd>${record.camera_id}</dd></div>
             <div><dt>พื้นที่ Location</dt><dd>${record.location}</dd></div>
-            <div><dt>รุ่น Model</dt><dd>${record.model}</dd></div>
-            <div><dt>ประเภท Type</dt><dd>${record.type}</dd></div>
+            <div><dt>ยี่ห้อ Brand</dt><dd>${record.brand}</dd></div>
+            <div><dt>ประเภท Type</dt><dd>${record.vehicle_type}</dd></div>
             <div><dt>สี Color</dt><dd><span class="color-chip"><span class="vehicle-color-dot ${vehicleColorClass(record.color)}"></span>${record.color}</span></dd></div>
             <div><dt>ทิศทาง Direction</dt><dd>${record.direction}</dd></div>
             <div><dt>ความเร็ว Speed</dt><dd>${record.speed} km/h</dd></div>
           </dl>
-          <div class="route-summary">
-            <strong>Route</strong>
-            <span>${route?.name ?? "ไม่พบเส้นทาง"}</span>
-            <small>${routeStops}</small>
-            ${selectedStop ? `<small>จุดที่ตรวจพบ: ${selectedStop.id} ${selectedStop.name}</small>` : `<small>กล้องนี้ยังไม่มีพิกัดใน planningCameraPoints</small>`}
-          </div>
         </aside>
       </section>
+      <div class="traffic-map-modal" data-traffic-map-modal role="dialog" aria-modal="true" aria-labelledby="trafficMapModalTitle" hidden>
+        <div class="traffic-map-modal-backdrop" data-close-traffic-map></div>
+        <div class="traffic-map-modal-dialog">
+          <div class="traffic-map-modal-header">
+            <div class="panel-title">
+              <h2 id="trafficMapModalTitle">แผนที่เส้นทางรถ</h2>
+              <p>${record.plate} · ${route?.name ?? "ไม่พบเส้นทาง"}</p>
+            </div>
+            <button class="icon-button traffic-map-modal-close" type="button" data-close-traffic-map aria-label="ปิดแผนที่ขยาย">
+              <span>${icon("close")}</span>
+            </button>
+          </div>
+          <div id="trafficDetailMapExpanded" class="traffic-live-map traffic-detail-map-expanded" role="img" aria-label="แผนที่เส้นทางรถแบบขยาย"></div>
+        </div>
+      </div>
     </div>
   `;
 }
-

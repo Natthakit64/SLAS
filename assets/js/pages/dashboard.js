@@ -1,11 +1,12 @@
 function renderDashboard() {
   const hours = ["6AM", "7AM", "8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM"];
   const flow = [420, 680, 1040, 1180, 960, 850, 910, 1020, 980, 1120, 1350, 1680, 1850, 1420, 1180, 910, 620];
+  const activeIncidentCount = incidents.filter((item) => item.status !== "completed").length;
   return `
     <div class="page-stack">
       <section class="stat-grid" aria-label="ตัวชี้วัดหลัก Key metrics">
         ${statCard({ value: "14,823", th: "ยานพาหนะวันนี้", en: "Total vehicles today", iconName: "car", color: "#3B6D11" })}
-        ${statCard({ value: "3", th: "เหตุการณ์ที่ยังเปิดอยู่", en: "Active incidents", iconName: "alert-triangle", color: "#A32D2D" })}
+        ${statCard({ value: formatNumber(activeIncidentCount), th: "เหตุการณ์ที่ยังดำเนินการ", en: "Active incidents", iconName: "alert-triangle", color: "#A32D2D" })}
         ${statCard({ value: "48 / 52", th: "กล้องที่ใช้งาน", en: "Active cameras", iconName: "camera", color: "#185FA5" })}
         ${statCard({ value: "42 km/h", th: "ความเร็วเฉลี่ย", en: "Avg speed", iconName: "speed", color: "#BA7517" })}
       </section>
@@ -53,7 +54,7 @@ function renderDashboard() {
                       <td>${item.location}</td>
                       <td>${item.type}</td>
                       <td><span class="badge ${item.severity}">${severityLabel(item.severity)}</span></td>
-                      <td>${item.status}</td>
+                      <td><span class="badge ${item.status}">${statusLabel(item.status)}</span></td>
                     </tr>
                   `,
                 )

@@ -10,7 +10,6 @@
 }
 
 .badge.low,
-.badge.open,
 .badge.live,
 .badge.up {
   color: var(--accent-green);
@@ -25,6 +24,8 @@
 }
 
 .badge.high,
+.badge.confirmed,
+.badge.open,
 .badge.offline,
 .badge.down {
   color: var(--accent-red);
@@ -32,9 +33,15 @@
 }
 
 .badge.resolved,
+.badge.completed,
 .badge.info {
   color: var(--accent-blue);
   background: var(--accent-blue-soft);
+}
+
+.badge.assisting {
+  color: var(--accent-amber);
+  background: var(--accent-amber-soft);
 }
 
 .filter-bar {

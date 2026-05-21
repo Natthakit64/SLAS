@@ -100,6 +100,65 @@
   align-self: start;
 }
 
+.heatmap-map-panel {
+  position: relative;
+  min-height: 560px;
+  padding: 0;
+}
+
+.analysis-heatmap-map {
+  min-height: 560px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.heatmap-road-glow {
+  filter: blur(1px);
+}
+
+.heatmap-road-segment {
+  filter: drop-shadow(0 6px 12px rgba(127, 29, 29, 0.22));
+}
+
+.heatmap-stat-list {
+  display: grid;
+  gap: 10px;
+}
+
+.heatmap-stat {
+  display: grid;
+  gap: 3px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.heatmap-stat span,
+.heatmap-stat small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.heatmap-stat strong {
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.heatmap-score {
+  display: inline-grid;
+  min-width: 44px;
+  min-height: 28px;
+  place-items: center;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--heat);
+  font-size: 12px;
+  font-weight: 820;
+}
+
 .intensity-scale {
   display: grid;
   gap: 8px;
@@ -109,7 +168,7 @@
 .scale-bar {
   height: 12px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #e9f5df, #b9d986, #f3c66e, #dd7844, #a32d2d);
+  background: linear-gradient(90deg, #fca5a5, #ef4444, #dc2626, #b91c1c, #7f1d1d);
 }
 
 .trend {
@@ -129,4 +188,95 @@
 
 .trend.flat {
   color: var(--accent-amber);
+}
+
+.truck-runs-page .metric-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.truck-runs-page .metric-card .metric-value {
+  font-size: 22px;
+}
+
+.truck-risk-panel {
+  align-self: start;
+}
+
+.truck-risk-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.truck-risk-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fffdf8;
+}
+
+.truck-risk-card > div:first-child {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.truck-risk-card strong {
+  color: var(--text-primary);
+}
+
+.truck-risk-card span,
+.truck-risk-card small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.road-risk-pill {
+  display: inline-grid;
+  min-width: 86px;
+  min-height: 28px;
+  place-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--risk);
+  background: color-mix(in srgb, var(--risk) 12%, #fff);
+  font-size: 12px;
+  font-weight: 820;
+  white-space: nowrap;
+}
+
+.truck-risk-meter {
+  overflow: hidden;
+  height: 9px;
+  border-radius: 999px;
+  background: #f0ece3;
+}
+
+.truck-risk-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--risk);
+}
+
+.truck-runs-table td:nth-child(3),
+.truck-runs-table td:nth-child(4),
+.truck-runs-table td:nth-child(5) {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1200px) {
+  .truck-runs-page .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .truck-runs-page .metric-grid {
+    grid-template-columns: 1fr;
+  }
 }
