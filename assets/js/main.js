@@ -211,7 +211,7 @@ function renderPage() {
   const meta = pageMeta[activePage];
   pageTitle.textContent = meta.th;
   pageEyebrow.textContent = meta.en;
-  document.title = `${meta.en} | TrafficOS`;
+  document.title = `${meta.en} | SLAS`;
   pageContent.dataset.page = activePage;
   pageContent.innerHTML = pageRenderers[activePage]();
   resetPageScroll();

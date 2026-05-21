@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SLAS">
+  <rect width="64" height="64" rx="14" fill="#2f5e0f"/>
+  <path d="M13 42c8-16 17-24 31-24" fill="none" stroke="#f8faf4" stroke-width="7" stroke-linecap="round"/>
+  <path d="M18 43c7-10 15-15 27-15" fill="none" stroke="#8bae4c" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="16" cy="43" r="5" fill="#f8faf4"/>
+  <circle cx="32" cy="29" r="5" fill="#f3c66e"/>
+  <circle cx="47" cy="18" r="5" fill="#dd7844"/>
+  <text x="32" y="56" fill="#f8faf4" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="800" text-anchor="middle">SLAS</text>
+</svg>

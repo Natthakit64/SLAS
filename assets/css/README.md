@@ -1,4 +1,4 @@
-# TrafficOS CSS Structure
+# SLAS CSS Structure
 
 `styles.css` is now a small manifest that imports the ordered CSS files below. Keep the import order because later files may override earlier shared styles.
 

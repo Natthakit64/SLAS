@@ -1,4 +1,4 @@
-# TrafficOS JavaScript Structure
+# SLAS JavaScript Structure
 
 `index.html` loads these files with classic deferred script tags. Keep the include order because later files depend on shared globals declared earlier.
 
